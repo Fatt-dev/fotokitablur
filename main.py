@@ -7,13 +7,14 @@ mp_drawing = mp.solutions.drawing_utils
 mp_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands(
-    max_num_hands=1,
+    max_num_hands=2,  # deteksi sampai 2 tangan
     model_complexity=1,
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5,
 )
 
 BLUR_KERNEL = (55, 55)  # makin besar (ganjil) makin blur
+WINDOW_TITLE = "foto kita blurrr"
 
 
 def is_peace_sign(landmarks):
@@ -56,6 +57,7 @@ def main():
 
         if results.multi_hand_landmarks:
             for hand_landmarks in results.multi_hand_landmarks:
+                # Gambar skeleton untuk setiap tangan yang terdeteksi
                 mp_drawing.draw_landmarks(
                     frame,
                     hand_landmarks,
@@ -68,18 +70,8 @@ def main():
 
         if peace_detected:
             frame = cv2.GaussianBlur(frame, BLUR_KERNEL, 0)
-            cv2.putText(
-                frame, "Peace sign terdeteksi - blur aktif",
-                (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2,
-            )
-        else:
-            status = "Tangan terdeteksi" if results.multi_hand_landmarks else "Mencari tangan..."
-            cv2.putText(
-                frame, status,
-                (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 200, 255), 2,
-            )
 
-        cv2.imshow("Peace Sign Blur - tekan 'q' untuk keluar", frame)
+        cv2.imshow(WINDOW_TITLE, frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
